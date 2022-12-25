@@ -57,6 +57,40 @@ function displayPlaylist(playlist) {
   document.getElementById("playlist-container").appendChild(checkbox);
   document.getElementById("playlist-container").appendChild(label);
 
+  var checkboxBullets = document.createElement("input");
+  checkboxBullets.type = "checkbox";
+  checkboxBullets.name = "bullets";
+  checkboxBullets.value = "bullets";
+  checkboxBullets.id = "bullets";
+  checkboxBullets.addEventListener("change", function () {
+    // Get the list element
+    var list = document.querySelector("#playlist-container ul");
+
+    // Get the list items
+    var lis = list.querySelectorAll("li");
+
+    if (this.checked) {
+      // The checkbox is checked, add hyphens to the start of each video name
+      lis.forEach(function (li) {
+        li.textContent = `- ${li.textContent}`;
+      });
+    } else {
+      // The checkbox is not checked, remove hyphens from the start of each video name
+      lis.forEach(function (li) {
+        li.textContent = li.textContent.slice(2);
+      });
+    }
+  });
+
+  // Create a label for the checkbox
+  var labelBullets = document.createElement("label");
+  labelBullets.htmlFor = "bullets";
+  labelBullets.textContent = "Bullets";
+
+  // Append the checkbox and label to the playlist container
+  document.getElementById("playlist-container").appendChild(checkboxBullets);
+  document.getElementById("playlist-container").appendChild(labelBullets);
+
   var ul = document.createElement("ul");
 
   var button = document.createElement("button");
@@ -75,8 +109,13 @@ function displayPlaylist(playlist) {
           li.textContent = video;
           ul.appendChild(li);
           return `${index + 1}. ${video}`;
-        } else {
+        } else if (document.getElementById("bullets").checked) {
           // The checkbox is not checked, exclude numbering in the text
+          li = document.createElement("li");
+          li.textContent = video;
+          ul.appendChild(li);
+          return `-. ${video}`;
+        } else {
           return video;
         }
       })
