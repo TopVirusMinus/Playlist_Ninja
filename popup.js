@@ -20,7 +20,44 @@ function getPlaylist() {
 function displayPlaylist(playlist) {
   // Clear the playlist container
   document.getElementById("playlist-container").innerHTML = "";
-  var ol = document.createElement("ol");
+
+  // Create a checkbox for numbering the list
+  var checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.name = "numbering";
+  checkbox.value = "number";
+  checkbox.id = "number";
+  checkbox.checked = false;
+  checkbox.addEventListener("change", function () {
+    // Get the ordered list element
+    var ul = document.querySelector("#playlist-container ul");
+
+    // Get the list items
+    var lis = ul.querySelectorAll("li");
+
+    if (this.checked) {
+      // The checkbox is checked, add numbering
+      lis.forEach(function (li, index) {
+        li.textContent = `${index + 1}. ${li.textContent}`;
+      });
+    } else {
+      // The checkbox is not checked, remove numbering
+      lis.forEach(function (li) {
+        li.textContent = li.textContent.slice(3);
+      });
+    }
+  });
+
+  // Create a label for the checkbox
+  var label = document.createElement("label");
+  label.htmlFor = "number";
+  label.textContent = "Number";
+
+  // Append the checkbox and label to the playlist container
+  document.getElementById("playlist-container").appendChild(checkbox);
+  document.getElementById("playlist-container").appendChild(label);
+
+  var ul = document.createElement("ul");
 
   var button = document.createElement("button");
   button.textContent = "Copy to Clipboard";
@@ -31,9 +68,19 @@ function displayPlaylist(playlist) {
     // Join the playlist into a single string
     var text = playlist
       .map(function (video, index) {
-        return `${index + 1}. ${video}`;
+        // Check if the checkbox is checked
+        if (document.getElementById("number").checked) {
+          // The checkbox is checked, include numbering in the text
+          var li = document.createElement("li");
+          li.textContent = video;
+          ul.appendChild(li);
+          return `${index + 1}. ${video}`;
+        } else {
+          // The checkbox is not checked, exclude numbering in the text
+          return video;
+        }
       })
-      .join("\n");
+      .join("\n\n");
 
     // Copy the text to the clipboard
     navigator.clipboard.writeText(text);
@@ -53,7 +100,7 @@ function displayPlaylist(playlist) {
   playlist.forEach(function (video) {
     var li = document.createElement("li");
     li.textContent = video;
-    ol.appendChild(li);
+    ul.appendChild(li);
   });
-  document.getElementById("playlist-container").appendChild(ol);
+  document.getElementById("playlist-container").appendChild(ul);
 }
